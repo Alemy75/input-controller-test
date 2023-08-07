@@ -7,6 +7,12 @@ export class InputController {
     constructor(actionsToBind, target) {
         this.actionsToBind = actionsToBind;
         this.target = target;
+
+        //Вынес это чтобы была возможность удалять обработчики
+        this.activateEvent = new Event(this.ACTION_ACTIVATED);
+        this.deactivateEvent = new Event(this.ACTION_DEACTIVATED);
+        this.keydownHandler = keydownHandler(target, this.activateEvent, this.actionsToBind).bind(this);
+        this.keyupHandler = keyupHandler(target, this.deactivateEvent, this.actionsToBind).bind(this);
     }
 
     bindActions(actionsToBind) {
@@ -22,42 +28,22 @@ export class InputController {
     }
 
     attach(target, dontEnable = false) {
-        const activateEvent = new Event(this.ACTION_ACTIVATED);
-        const deactivateEvent = new Event(this.ACTION_DEACTIVATED);
-
         if (!dontEnable) {
-            target.addEventListener("keydown", (event) => {
-                for (let key in this.actionsToBind) {
-                    if (this.actionsToBind[key].keys.includes(event.keyCode)) {
-                        if (this.actionsToBind[key].active != true) {
-                            this.actionsToBind[key].active = true;
-                            target.dispatchEvent(activateEvent);
-                        }
-                    }
-                }
-            });
+            target.addEventListener("keydown", this.keydownHandler);
 
-            target.addEventListener("keyup", (event) => {
-                target.dispatchEvent(deactivateEvent);
-                for (let key in this.actionsToBind) {
-                    if (this.actionsToBind[key].keys.includes(event.keyCode)) {
-                        this.actionsToBind[key].active = false;
-                    }
-                }
-            });
+            target.addEventListener("keyup", this.keyupHandler);
         }
     }
 
     detach(target) {
-        const newTarget = target.cloneNode(true);
-        target.replaceWith(newTarget);
+        target.removeEventListener("keydown", this.keydownHandler);
     }
 
     isActionActive(action) {
         if (this.actionsToBind[action].enabled) {
             return this.actionsToBind[action].active ? true : false;
         } else {
-            return false
+            return false;
         }
     }
 
@@ -68,4 +54,28 @@ export class InputController {
             return false;
         }
     }
+}
+
+function keydownHandler(target, activateEvent, actions) {
+    return (event) => {
+        for (let key in actions) {
+            if (actions[key].keys.includes(event.keyCode)) {
+                if (actions[key].active != true) {
+                    actions[key].active = true;
+                    target.dispatchEvent(activateEvent);
+                }
+            }
+        }
+    };
+}
+
+function keyupHandler(target, deactivateEvent, actions) {
+    return (event) => {
+        target.dispatchEvent(deactivateEvent);
+        for (let key in actions) {
+            if (actions[key].keys.includes(event.keyCode)) {
+                actions[key].active = false;
+            }
+        }
+    };
 }

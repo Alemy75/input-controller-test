@@ -51,16 +51,14 @@ const addEventListeners = () => {
             changeDirection("left");
             startAnimation();
         }
-        if (
-            Game.isActionActive("right") &&
-            Game.actionsToBind["right"].enabled
-        ) {
+        if (Game.isActionActive("right") && Game.actionsToBind["right"].enabled) {
             changeDirection("right");
             startAnimation();
         }
         if (Game.isActionActive("jump") && Game.actionsToBind["jump"].enabled) {
             if (Game.isKeyPressed(32)) {
                 sprite.classList.add("jump-animation");
+                sprite.style.background = "green";
             }
         }
     });
@@ -69,14 +67,12 @@ const addEventListeners = () => {
         if (Game.isActionActive("left") && Game.actionsToBind["left"].enabled) {
             stopAnimation();
         }
-        if (
-            Game.isActionActive("right") &&
-            Game.actionsToBind["right"].enabled
-        ) {
+        if (Game.isActionActive("right") && Game.actionsToBind["right"].enabled) {
             stopAnimation();
         }
         if (Game.isActionActive("jump") && Game.actionsToBind["jump"].enabled) {
             sprite.classList.remove("jump-animation");
+            sprite.style.background = "red";
         }
     });
 };
