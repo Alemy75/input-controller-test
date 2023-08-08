@@ -13,13 +13,14 @@ Game.attach(target);
 
 let requestId;
 let positionX = 0;
-let speedX = 5;
-let direction = "right";
+let speedX = 3;
+let direction = "left";
 
 function animate() {
     if (direction === "right") {
         positionX += speedX;
-    } else {
+    }
+    if (direction === "left") {
         positionX -= speedX;
     }
 
@@ -46,32 +47,35 @@ function changeDirection(newDirection) {
 }
 
 const actionActivatedEventListener = () => {
-    if (Game.isActionActive("left") && Game.actionsToBind["left"].enabled) {
-        changeDirection("left");
-        startAnimation();
-    }
-    if (Game.isActionActive("right") && Game.actionsToBind["right"].enabled) {
-        changeDirection("right");
-        startAnimation();
-    }
     if (Game.isActionActive("jump") && Game.actionsToBind["jump"].enabled) {
         if (Game.isKeyPressed(32)) {
             sprite.classList.add("jump-animation");
             sprite.style.background = "green";
         }
     }
+    if (Game.isActionActive("right") && Game.actionsToBind["right"].enabled) {
+        changeDirection("right");
+        startAnimation();
+    }
+    if (Game.isActionActive("left") && Game.actionsToBind["left"].enabled) {
+        changeDirection("left");
+        startAnimation();
+    }
 };
 
 const actionDeactivatedEventListener = () => {
-    if (Game.isActionActive("left") && Game.actionsToBind["left"].enabled) {
-        stopAnimation();
+    if (!Game.isActionActive("left")) {
+        changeDirection("right");
     }
-    if (Game.isActionActive("right") && Game.actionsToBind["right"].enabled) {
-        stopAnimation();
+    if (!Game.isActionActive("right")) {
+        changeDirection("left");
     }
-    if (Game.isActionActive("jump") && Game.actionsToBind["jump"].enabled) {
+    if (!Game.isActionActive("jump")) {
         sprite.classList.remove("jump-animation");
         sprite.style.background = "red";
+    }
+    if (Game.checkActive()) {
+        stopAnimation();
     }
 };
 

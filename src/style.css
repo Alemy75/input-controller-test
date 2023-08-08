@@ -6,7 +6,7 @@ body {
 }
 .container {
     display: block;
-    width: 100%;
+    width: 600px;
     height: 500px;
     border: 1px solid #cccccc50;
     background-color: white;

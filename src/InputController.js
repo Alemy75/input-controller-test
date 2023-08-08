@@ -8,74 +8,88 @@ export class InputController {
         this.actionsToBind = actionsToBind;
         this.target = target;
 
-        //Вынес это чтобы была возможность удалять обработчики
+        // Вынес это чтобы была возможность удалять обработчики
         this.activateEvent = new Event(this.ACTION_ACTIVATED);
         this.deactivateEvent = new Event(this.ACTION_DEACTIVATED);
-        this.keydownHandler = keydownHandler(target, this.activateEvent, this.actionsToBind).bind(this);
-        this.keyupHandler = keyupHandler(target, this.deactivateEvent, this.actionsToBind).bind(this);
+        this.keyupHandler = this.keyupHandler().bind(this);
+        this.keydownHandler = this.keydownHandler().bind(this);
+    }
+
+    keydownHandler() {
+        return (event) => {
+            for (let key in this.actionsToBind) {
+                if (this.enabled && this.actionsToBind[key].keys.includes(event.keyCode) && this.actionsToBind[key].active != true) {
+                    this.actionsToBind[key].active = true;
+                    this.target.dispatchEvent(this.activateEvent);
+                }
+            }
+        };
+    }
+
+    keyupHandler() {
+        return (event) => {
+            for (let key in this.actionsToBind) {
+                if (this.enabled && this.actionsToBind[key].keys.includes(event.keyCode)) {
+                    this.target.dispatchEvent(this.deactivateEvent);
+                }
+            }
+        };
     }
 
     bindActions(actionsToBind) {
-        this.actionsToBind = actionsToBind;
+        if (this.enabled) {
+            this.actionsToBind = actionsToBind;
+        }
     }
 
     enableAction(actionName) {
-        this.actionsToBind[actionName].enabled = true;
+        if (this.enabled) {
+            this.actionsToBind[actionName].enabled = true;
+        }
     }
 
     disableAction(actionName) {
-        this.actionsToBind[actionName].enabled = false;
+        if (this.enabled) {
+            this.actionsToBind[actionName].enabled = false;
+        }
     }
 
     attach(target, dontEnable = false) {
-        if (!dontEnable) {
+        if (this.enabled && !dontEnable && this.focused) {
             target.addEventListener("keydown", this.keydownHandler);
-
             target.addEventListener("keyup", this.keyupHandler);
         }
     }
 
     detach(target) {
-        target.removeEventListener("keydown", this.keydownHandler);
+        if (this.enabled) {
+            target.removeEventListener("keydown", this.keydownHandler);
+            target.removeEventListener("keyup", this.keyupHandler);
+        }
     }
 
     isActionActive(action) {
-        if (this.actionsToBind[action].enabled) {
-            return this.actionsToBind[action].active ? true : false;
+        if (this.enabled && this.actionsToBind[action].enabled) {
+            return this.actionsToBind[action].active;
         } else {
             return false;
         }
     }
 
     isKeyPressed(keyCode) {
-        if (Object.values(this.actionsToBind).find((item) => item.keys.includes(keyCode) && item.active)) {
-            return true;
-        } else {
-            return false;
+        if (this.enabled) {
+            return Object.values(this.actionsToBind).some((item) => item.keys.includes(keyCode) && item.active);
         }
     }
-}
 
-function keydownHandler(target, activateEvent, actions) {
-    return (event) => {
-        for (let key in actions) {
-            if (actions[key].keys.includes(event.keyCode)) {
-                if (actions[key].active != true) {
-                    actions[key].active = true;
-                    target.dispatchEvent(activateEvent);
+    checkActive() {
+        if (this.enabled) {
+            for (let key in this.actionsToBind) {
+                if (this.actionsToBind.hasOwnProperty(key) && this.actionsToBind[key].active !== false) {
+                    return false;
                 }
             }
+            return true;
         }
-    } 
-}
-
-function keyupHandler(target, deactivateEvent, actions) {
-    return (event) => {
-        target.dispatchEvent(deactivateEvent);
-        for (let key in actions) {
-            if (actions[key].keys.includes(event.keyCode)) {
-                actions[key].active = false;
-            }
-        }
-    } 
+    }
 }
