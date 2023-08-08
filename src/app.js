@@ -98,3 +98,5 @@ disableJumpBtn.addEventListener("click", () => Game.disableAction("jump"));
 
 const enableJumpBtn = document.querySelector(".enableJump");
 enableJumpBtn.addEventListener("click", () => Game.enableAction("jump"));
+
+console.log(Game.buttons)
