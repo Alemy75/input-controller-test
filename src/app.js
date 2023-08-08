@@ -45,36 +45,40 @@ function changeDirection(newDirection) {
     }
 }
 
-const addEventListeners = () => {
-    target.addEventListener(Game.ACTION_ACTIVATED, () => {
-        if (Game.isActionActive("left") && Game.actionsToBind["left"].enabled) {
-            changeDirection("left");
-            startAnimation();
+const actionActivatedEventListener = () => {
+    if (Game.isActionActive("left") && Game.actionsToBind["left"].enabled) {
+        changeDirection("left");
+        startAnimation();
+    }
+    if (Game.isActionActive("right") && Game.actionsToBind["right"].enabled) {
+        changeDirection("right");
+        startAnimation();
+    }
+    if (Game.isActionActive("jump") && Game.actionsToBind["jump"].enabled) {
+        if (Game.isKeyPressed(32)) {
+            sprite.classList.add("jump-animation");
+            sprite.style.background = "green";
         }
-        if (Game.isActionActive("right") && Game.actionsToBind["right"].enabled) {
-            changeDirection("right");
-            startAnimation();
-        }
-        if (Game.isActionActive("jump") && Game.actionsToBind["jump"].enabled) {
-            if (Game.isKeyPressed(32)) {
-                sprite.classList.add("jump-animation");
-                sprite.style.background = "green";
-            }
-        }
-    });
+    }
+};
 
-    target.addEventListener(Game.ACTION_DEACTIVATED, () => {
-        if (Game.isActionActive("left") && Game.actionsToBind["left"].enabled) {
-            stopAnimation();
-        }
-        if (Game.isActionActive("right") && Game.actionsToBind["right"].enabled) {
-            stopAnimation();
-        }
-        if (Game.isActionActive("jump") && Game.actionsToBind["jump"].enabled) {
-            sprite.classList.remove("jump-animation");
-            sprite.style.background = "red";
-        }
-    });
+const actionDeactivatedEventListener = () => {
+    if (Game.isActionActive("left") && Game.actionsToBind["left"].enabled) {
+        stopAnimation();
+    }
+    if (Game.isActionActive("right") && Game.actionsToBind["right"].enabled) {
+        stopAnimation();
+    }
+    if (Game.isActionActive("jump") && Game.actionsToBind["jump"].enabled) {
+        sprite.classList.remove("jump-animation");
+        sprite.style.background = "red";
+    }
+};
+
+const addEventListeners = () => {
+    target.addEventListener(Game.ACTION_ACTIVATED, actionActivatedEventListener);
+
+    target.addEventListener(Game.ACTION_DEACTIVATED, actionDeactivatedEventListener);
 };
 
 addEventListeners();

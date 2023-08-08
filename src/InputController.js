@@ -66,7 +66,7 @@ function keydownHandler(target, activateEvent, actions) {
                 }
             }
         }
-    };
+    } 
 }
 
 function keyupHandler(target, deactivateEvent, actions) {
@@ -77,5 +77,5 @@ function keyupHandler(target, deactivateEvent, actions) {
                 actions[key].active = false;
             }
         }
-    };
+    } 
 }

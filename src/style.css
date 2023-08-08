@@ -22,6 +22,7 @@ body {
     height: 50px;
     background-color: red;
     display: block;
+    border-radius: 50%;
 }
 
 @keyframes jump {
