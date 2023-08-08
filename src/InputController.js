@@ -30,6 +30,7 @@ export class InputController {
         return (event) => {
             for (let key in this.actionsToBind) {
                 if (this.enabled && this.actionsToBind[key].keys.includes(event.keyCode)) {
+                    this.actionsToBind[key].active = false;
                     this.target.dispatchEvent(this.deactivateEvent);
                 }
             }
