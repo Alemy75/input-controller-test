@@ -73,7 +73,7 @@ const actionDeactivatedEventListener = () => {
     if (!Game.isActionActive("jump")) {
         sprite.classList.remove("jump-animation");
         sprite.style.background = "red";
-    }
+    }   
     if (Game.checkActive()) {
         stopAnimation();
     }
